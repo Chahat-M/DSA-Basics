@@ -345,6 +345,64 @@ Node *duplicate(Node *head){
 }
 
 // Reverse a linked list in groups of k - imp
+// Detect loop in a linked list
+// Method 1 - O(n^2)
+bool isLoop1(Node *head){
+    Node *curr = head;
+    while(curr != NULL){
+        Node *var = curr->next;
+        for(Node *temp = head; temp != curr ; temp = temp->next){ 
+            if(temp == var){
+                return true;
+            }
+        }
+        curr = curr->next;
+    }
+    return false;
+}
+
+// Method 2 - O(n)
+/*
+// Modify structure of node
+// Create a new field, bool visited and set its default value to false
+// Once a node is visited set it to true, and if a node is already true i.e is being visited more than once 
+// So, yes a loop else no
+*/
+
+// Method 3 - O(n)
+// Modifies linked list pointer but destroys the linked list
+// Create a dummy node, and let every node point to it
+bool isLoop3(Node *head){
+    Node *temp = new Node(0); // Creating a dummy node
+    while(head != NULL){
+        Node *var = head->next;
+        if(head->next == temp)
+            return true;
+        head->next = temp;
+        head = var;
+    }
+    return false;
+} 
+
+// Method 4 - O(n)
+// Use hashing
+
+// Method 5 - Best solution O(n) 
+// Floyd Algorithm for Cycle detection - imp
+// Maintain two pointers, slow and fast, slow moves by 1 and fast moves by 2
+// If it's a loop they will surely meet, if not a loop fast will reach NULL
+bool isLoop5(Node *head){
+    Node *slow = head;
+    Node *fast = head;
+    while(fast != NULL && fast->next != NULL){
+        slow = slow->next;
+        fast = fast->next->next;
+        if(slow == fast){
+            return true;
+        }
+    }
+    return false;
+}
 
 int main()
 {
@@ -359,6 +417,8 @@ int main()
     tmp2->next = tmp3;
     tmp3->next = tmp1;
     // Area for trying the last function
+    bool a = isLoop3(head);
+    cout << a;
     //printList(temp);
     //+++++++++++++++++++++++++++++++++
 
