@@ -420,7 +420,6 @@ int main()
     bool a = isLoop3(head);
     cout << a;
     //printList(temp);
-    //+++++++++++++++++++++++++++++++++
 
     // Short implementation
     // ------------------------------------------------------------

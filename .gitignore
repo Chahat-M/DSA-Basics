@@ -1,11 +1,5 @@
-LinkedList.exe
-DoublyList.exe
 graph_assgn.cpp
-stack.exe
 trees_asgn.cpp
-trees_asgn.exe
-queue.exe
-trees.exe
-BST.exe
+*.exe
 tempCodeRunnerFile.cpp
 .vscode
