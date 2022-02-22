@@ -701,6 +701,7 @@ int evalPre(string str){
 }
 
 int main(){
-    cout << evalPre("*+10 2 3");
+    string str = "(a+b*(c+d))*e";
+    cout << IntoPost(str);
     return 0;
 }

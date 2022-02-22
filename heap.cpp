@@ -273,18 +273,168 @@ struct MinHeap{
     }
     //----------------------------------------------------------------------------------------------------------------
 
-    // K Closest elements of a given no
+    // K Closest elements of a given no in an array
     void kClosest(int arr[], int n, int k, int x){
-        
+        priority_queue<pair<int,int>> pq;
+        for(int i = 0; i < k; i++)
+            pq.push({abs(arr[i] - x), i});
+
+        for(int i = k; i < n; i++){
+            if(abs(arr[i] - x) < pq.top().first){
+                pq.pop();
+                pq.push({abs(arr[i] - x), i});
+            }
+        }
+
+        while(pq.empty() == false){
+            cout << arr[pq.top().second] << " ";
+            pq.pop();
+        }
     }
 
+    // Merge K sorted arrays and make the resulting array sorted
+    //--------------------------------------------------------------------------------------------------------------
+    /* Method 1 - Super Naive Approach
+    Approach - Join all the arrays and then sort
+    Time complexity - O(nk * lognk)
+    */
+
+    /* Method 2 - Naive Approach
+    Approach - Copy 1st array in the resulting array
+             - Merge the other arrays one by one with the resulting array
+             - Merging = Join the two arrays s.t they are sorted
+    Time complexity - O(n * k^2), n = max size of array, k = numbers of array
+    */
+    // To merge 2 arrays
+    vector<int> mergeArrays(vector<int> arr1, vector<int> arr2){
+        int i = 0, j = 0;
+        vector<int> res; // The merged array
+
+        while(i < arr1.size() && j < arr2.size()){
+            if(arr1[i] < arr2[j])
+                res.push_back(arr1[i++]);  // Inserting the smaller element in the merged array and updating the variable simultaneously
+            else
+                res.push_back(arr2[j++]);
+        }
+
+        while(i < arr1.size()){ // Elements left in arr1
+            res.push_back(arr1[i++]);
+        }
+
+        while(j < arr2.size()){ // Elements left in arr2
+            res.push_back(arr2[j++]);
+        }
+
+        return res;
+    }
+
+    // To merge K arrays
+    vector<int> mergeKArrays2(vector<vector<int>> vect){
+        vector<int> result = vect[0]; // Copying the 1st array to the resulting array
+
+        for(int i = 1; i < vect.size(); i++){
+            result = mergeArrays(result, vect[i]); // Merging the resulting array with the next array
+        }
+        return result;
+    }
+
+    /* Method 3 - Efficient way - imp
+    Approach - Create minHeap of first elements of all the arrays
+             - Extract min and add it to the resulting array
+             - At the same time, insert the next element of same array and then repeat from 2
+    Time complexity -  
+    */
+    // Since, we need Tripletrmation about the array to which the element belongs 
+    // We store it as an object which contains all the values
+    struct Triplet{
+        int value, array_pos, value_pos;
+        Triplet(int val, int ap, int vp){
+            value = val; // The value of the element
+            array_pos = ap; // The position of array in all arrays to which the element belongs
+            value_pos = vp; // The position of the element in that particular array
+        }
+    };
+
+    struct Compare{ // To make the priority queue of ascending order
+        bool operator()(Triplet &t1, Triplet &t2){
+            return t1.value > t2.value;
+        }
+    };
+
+    vector<int> mergeKArrays3(vector<vector<int>> vect){
+        vector<int> result;
+        priority_queue<Triplet, vector<Triplet>, Compare> pq; // Creating minHeap
+
+        // Adding 1st element of all arrays
+        for(int i = 0; i < vect.size(); i++){
+            Triplet t(vect[i][0], i, 0);
+            pq.push(t);
+        }
+
+        while(!pq.empty()){
+            Triplet curr = pq.top();
+            pq.pop();
+            result.push_back(curr.value);
+            int ap = curr.array_pos;
+            int vp = curr.value_pos;
+            if(vp + 1 < vect[ap].size()){ // If next element exists in the same array
+                Triplet trp(vect[ap][vp + 1], ap, vp + 1);
+                pq.push(trp);
+            }
+        }
+
+        return result;
+    }
+    //-----------------------------------------------------------------------------------------------------------------
+
+    // Median of a stream
+    /* Efficient solution
+    Approach - Maintain two containers, keep smaller elements in one and greater in other
+             - Left container - maxHeap, right container - minHeap
+             - In case of even elements, median = (max of maxHeap + min of minHeap) / 2
+             - In case of odd elements, median = max of maxHeap
+             - Here, we will be maintaining extra elements in left only
+    Time complexity - O(nlogn)
+    */
+    void printMedian(int arr[], int n){
+        priority_queue<int> left;   // maxHeap
+        priority_queue<int, vector<int>, greater<int>> right;   // minHeap
+
+        left.push(arr[0]);
+        cout << arr[0] << " ";
+        for(int i = 1; i < n; i++){
+            int x = arr[i];
+            if(left.size() > right.size()){ // Extra elements on left = odd no. of elements initially 
+                if(left.top() > x){
+                    right.push(left.top());
+                    left.pop();
+                    left.push(x); // new element added - size increased by 1 = even
+                }
+                else
+                    right.push(x);
+                cout << (left.top() + right.top()) / 2.0 << " ";
+            }
+            else{   // Equal elements with both - even
+                if(left.top() >= x){
+                    left.push(x); // Extra element to be maintained in left always - our choice
+                }
+                else{
+                    right.push(x);
+                    left.push(right.top());
+                    right.pop();
+                }
+                cout << left.top() << " ";  // After adding an element even->odd
+            }
+        }
+    }
 };
-
-
 
 int main(){
     MinHeap mh(5);
-    int arr[5] = {5, 15, 10, 20, 8};
-    mh.kLargest1(arr, 5, 3);
+    vector<vector<int>> arr{ { 10, 20, 30 }, { 5, 15 }, { 1, 9, 11, 18 } };
+    vector<int> res = mh.mergeKArrays2(arr);
+    cout << "Merged array is " << endl; 
+    for (auto x : res) 
+        cout << x << " ";
     return 0;
 }
