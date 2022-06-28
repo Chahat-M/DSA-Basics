@@ -84,8 +84,10 @@ void distNodes(Node *root, int k){
     if(k == 0){
         cout << root->data << " ";
     }
-    distNodes(root->left, k-1);
-    distNodes(root->right, k-1);
+    else{
+        distNodes(root->left, k-1);
+        distNodes(root->right, k-1);
+    }
 }
 
 // Level Order Traversal or Breadth Order Traversal
@@ -258,7 +260,7 @@ bool childrenSum(Node *root){
             val += root->left->data;
         if(root->right != NULL)
             val += root->right->data;
-        if(val== root->data)
+        if(val == root->data)
             return 1;
         else
             return 0;
@@ -483,6 +485,7 @@ int heightNdia(Node *root){
 
 // Lowest Common Ancestor of two nodes - imp
 // Lowest in terms of the level not it's value
+// Can be used to find distance between two nodes as well
 //-------------------------------------------------------------------------------------------------------
 /* Method 1
     Use two arrays to store the path nodes from root to the given node
@@ -555,14 +558,16 @@ Node *nodesLCAeff(Node *root, int val1, int val2){
 }
 //---------------------------------------------------------------------------------------------------------------------
 
-// Burn a binary tree from a leaf - imp
+// Burn a binary tree from a leaf - very imp
 // Takes 0sec to burn the leaf, +1sec to burn all adjacent at same time, then +1sec to burn their adjacent and so on
 /* Approach - 
+    Farthest distance of the nodes from the leaf via its ancestors
     Find the distance of the leaf node from its ancestors 
     See if it is in left of ancestor or right
     Add the distance to the opposite height of the ancestor node
     To return the height of the tree and update the time in a variable simultaneously
 */
+// Refer Diameter of Binary Tree 
 // Time complexity - O(n)
 // Auxiliary space -  
 int burnTime(Node *root, int leaf, int &dist, int &result){
@@ -574,7 +579,7 @@ int burnTime(Node *root, int leaf, int &dist, int &result){
     }
     // ldist = distance of left child from given leaf node, similarly rdist
     int ldist = -1, rdist = -1;
-    int left_height = burnTime(root->left, leaf, ldist, result);    // sets left height od the node and also values of ldist and result
+    int left_height = burnTime(root->left, leaf, ldist, result);    // sets left height of the node and also values of ldist and result
     int right_height = burnTime(root->right, leaf, rdist, result);
 
     // The further if else if condition will hold only for ancestors of leaf node
@@ -741,8 +746,9 @@ int main(){
     // Fun fact - Why we can't use '\' without quotes ?
     root->left->left = new Node(4);
     root->left->right = new Node(5);
+    root->right->left = new Node(6);
+    root->right->right = new Node(7);
 
-    vector<int> arr;
-    inTraversal_it(root);
+    preTraversal(root);
     return 0;
 }
